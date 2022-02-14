@@ -2,10 +2,12 @@ package dev.projectg.ecodatabase;
 
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
+import dev.projectg.ecodatabase.listeners.PlayerEvents;
 import dev.projectg.ecodatabase.tasks.PlayerEcoTask;
 import dev.projectg.logger.EcoDatabaseLogger;
 import dev.projectg.logger.JavaUtilLogger;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
@@ -22,6 +24,8 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         // Logger
         new JavaUtilLogger(getLogger());
         EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
+
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
 
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             logger.error("Vault not found! Disabling EcoDatabase!");
