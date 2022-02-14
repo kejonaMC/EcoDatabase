@@ -1,0 +1,4 @@
+name: EcoDatabase
+version: '${project.version}'
+main: dev.projectg.ecodatabase.EcoDatabaseSpigot
+api-version: 1.18

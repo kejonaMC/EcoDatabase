@@ -1,0 +1,12 @@
+database-type: mysql
+
+host: localhost
+port: 3306
+database: Economy
+username: root
+password: password
+
+# Disabling sync will put less load on the server.
+enable-sync: true
+# sync interval in minutes (default: 5)
+sync-interval: 5
