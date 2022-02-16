@@ -30,8 +30,8 @@ public class EcoHandler {
         }
     }
 
-    // Update balance at interval
-    public void updateHashmapBalance(int interval) {
+    // Update hashmap balance each 5min
+    public void updateHashmapBalance() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.plugin, () -> {
             if (!onlinePlayers.isEmpty()) {
                 for (Player player : onlinePlayers) {
@@ -42,6 +42,24 @@ public class EcoHandler {
                     }
                 }
             }
+        }, 100L, 1000L * 60 * 5);
+    }
+
+    // Update balance at interval to database
+    public void queryHashmapBalance(int interval) {
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.plugin, () -> {
+            if (!balance.isEmpty()) {
+                for (Map.Entry<UUID, Double> entry : balance.entrySet()) {
+                    try {
+                        EcoDatabase.updateBalance(entry.getKey(), entry.getValue());
+                    } catch (Exception e) {
+                        EcoDatabaseLogger.getLogger().error("Error query eco balance to database");
+                    }
+                }
+            }
         }, 100L, 1000L * 60 * (long) interval);
+    }
+    public static EcoHandler handler() {
+        return new EcoHandler();
     }
 }

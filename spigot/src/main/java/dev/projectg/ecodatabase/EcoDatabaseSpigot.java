@@ -34,9 +34,13 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         Path path = this.getDataFolder().toPath();
         Configurate config = Configurate.create(path);
 
-        if (!config.getEnableSync()) {
-            new EcoHandler().updateHashmapBalance(config.getSyncInterval());
+        // Sync Economy
+        EcoHandler.handler().updateHashmapBalance();
+        if (config.getEnableSync()) {
+            logger.info(" sync economy enabled");
+            EcoHandler.handler().queryHashmapBalance(config.getSyncInterval());
         }
+
 
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
@@ -48,7 +52,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        new EcoHandler().updateEcoOnShutdown();
+        EcoHandler.handler().updateEcoOnShutdown();
     }
 
     public static EcoDatabaseSpigot getPlugin() {

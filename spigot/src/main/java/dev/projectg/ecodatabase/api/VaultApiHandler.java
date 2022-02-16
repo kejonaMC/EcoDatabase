@@ -53,8 +53,6 @@ public class VaultApiHandler {
         return new VaultApiHandler();
     }
 
-    public Economy getEconomy() {
-        return economy;
-    }
+    public Economy getEconomy() {return economy;}
 
 }
