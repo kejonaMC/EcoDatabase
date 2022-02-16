@@ -13,7 +13,6 @@ public class EcoHandler {
 
     public static Map<UUID, Double> balance = new HashMap<>();
     List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-    EcoDatabaseSpigot plugin = EcoDatabaseSpigot.getPlugin();
 
     // Update when server is shutting down
     public void updateEcoOnShutdown() {

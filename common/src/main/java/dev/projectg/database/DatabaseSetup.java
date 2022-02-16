@@ -28,6 +28,7 @@ public class DatabaseSetup {
         password = config.getPassword();
         economy = "Economy";
 
+
         if (config.getDatabaseType().equalsIgnoreCase("mysql")) {
             logger.info("Connecting to MySQL database...");
             try {
@@ -78,16 +79,64 @@ public class DatabaseSetup {
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + DatabaseSetup.economy + "(Playername varchar(16), UUID char(36), Balance varchar(500))");
+            statement.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static Connection getConnection() {
-        return connection;
+    public void connectionAlive() {
+        try {
+            if (connection == null) {
+                logger.warn("Connection to database was lost, Trying to reconnect...");
+                connectionReconnect();
+            }
+            if (!connection.isReadOnly()) {
+                logger.warn("Unable to write to database, Trying to reconnect...");
+                connectionReconnect();
+            }
+            if (connection.isClosed()) {
+                logger.warn("Connection to database is closed, Trying to reconnect...");
+                connectionReconnect();
+            }
+        } catch (Exception e) {
+            logger.error("Could not reconnect to Database! Error: " + e.getMessage());
+        }
     }
+
+    public void connectionReconnect() {
+        try {
+            long start;
+            long end;
+
+            start = System.currentTimeMillis();
+            logger.warn("Attempting to establish a connection to the MySQL server!");
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":"
+                    + this.port + "/" + this.database, this.username, this.password);
+            end = System.currentTimeMillis();
+            logger.info("Connection to MySQL server established in " + ((end - start)) + " ms!");
+        } catch (Exception e) {
+            logger.error("Error re-connecting to the database! Error: " + e.getMessage());
+        }
+    }
+
+    public void connectionClose() {
+        try {
+            logger.warn("Close database connection!");
+            connection.close();
+            connection = null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void setConnection(Connection connection) {
         DatabaseSetup.connection = connection;
+    }
+
+    public static Connection getConnection() {
+        return connection;
     }
 }

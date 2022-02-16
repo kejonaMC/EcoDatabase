@@ -20,12 +20,12 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        // Enable vault
-        new VaultApiHandler();
-
         // Logger
         new JavaUtilLogger(getLogger());
         EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
+
+        // Enable vault
+        new VaultApiHandler();
 
         // Register events
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
@@ -37,7 +37,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         // Sync Economy
         EcoHandler.handler().updateHashmapBalance();
         if (config.getEnableSync()) {
-            logger.info(" sync economy enabled");
+            logger.info("sync economy enabled");
             EcoHandler.handler().queryHashmapBalance(config.getSyncInterval());
         }
 
@@ -45,6 +45,13 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
         new DatabaseSetup().mysqlSetup(path, config);
+        // Check if connection is mysql and alive -> reconnect
+        if (config.getDatabaseType().equals("mysql")) {
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+                new DatabaseSetup().connectionAlive();
+            }, 100L, 1000L * 60 * 30);
+        }
+
 
         // End
         logger.info("EcoDatabase has been enabled!");
@@ -53,10 +60,10 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     @Override
     public void onDisable() {
         EcoHandler.handler().updateEcoOnShutdown();
+        new DatabaseSetup().connectionClose();
     }
 
     public static EcoDatabaseSpigot getPlugin() {
         return plugin;
     }
-
 }
