@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class EcoDatabase {
 
+    // Add player into database on first join
     public static void addPlayer(String playerName, UUID playerUUID, double balance) {
         try {
             String sql = "(PLAYERNAME,UUID,BALANCE) VALUES (?,?,?)";
@@ -21,6 +22,7 @@ public class EcoDatabase {
         }
     }
 
+    // Query database for player balance
     public static Double balance(UUID uuid, String column) {
         try {
             // Balance column
@@ -34,6 +36,8 @@ public class EcoDatabase {
         return null;
 
     }
+
+    // Update database player balance
     public static void updateBalance(UUID playerUUID, Double balance) {
         try {
             String sql = " SET BALANCE ='" + balance + "' WHERE UUID='" + playerUUID + "'";

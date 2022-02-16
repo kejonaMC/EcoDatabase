@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.nio.file.Path;
 
 public final class EcoDatabaseSpigot extends JavaPlugin {
-
     public static EcoDatabaseSpigot plugin;
 
     @Override
@@ -37,10 +36,9 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         // Sync Economy
         EcoHandler.handler().updateHashmapBalance();
         if (config.getEnableSync()) {
-            logger.info("sync economy enabled");
+            logger.info("Sync economy enabled");
             EcoHandler.handler().queryHashmapBalance(config.getSyncInterval());
         }
-
 
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
@@ -51,7 +49,6 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
                 new DatabaseSetup().connectionAlive();
             }, 100L, 1000L * 60 * 30);
         }
-
 
         // End
         logger.info("EcoDatabase has been enabled!");

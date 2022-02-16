@@ -17,7 +17,7 @@ public class VaultApiHandler {
         if(!initVault()) {
             logger.error("Vault not found! Disabling EcoDatabase!");
             plugin.onDisable();
-        };
+        }
     }
 
     private boolean initVault() {
@@ -53,7 +53,6 @@ public class VaultApiHandler {
     public static VaultApiHandler eco() {
         return new VaultApiHandler();
     }
-
     public Economy getEconomy() {return economy;}
 
 }
