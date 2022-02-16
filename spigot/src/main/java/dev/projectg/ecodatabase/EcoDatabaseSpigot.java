@@ -3,8 +3,8 @@ package dev.projectg.ecodatabase;
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.api.VaultApiHandler;
+import dev.projectg.ecodatabase.handers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
-import dev.projectg.ecodatabase.tasks.PlayerEcoTask;
 import dev.projectg.logger.EcoDatabaseLogger;
 import dev.projectg.logger.JavaUtilLogger;
 import org.bukkit.Bukkit;
@@ -34,15 +34,13 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         Path path = this.getDataFolder().toPath();
         Configurate config = Configurate.create(path);
 
+        if (!config.getEnableSync()) {
+            new EcoHandler().updateHashmapBalance(config.getSyncInterval());
+        }
+
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
         new DatabaseSetup().mysqlSetup(path, config);
-
-        // Sync player eco at interval
-        if (config.getEnableSync()) {
-            new PlayerEcoTask().syncDB(config.getSyncInterval());
-            logger.info("Sync enabled!");
-        }
 
         // End
         logger.info("EcoDatabase has been enabled!");
@@ -50,6 +48,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        new EcoHandler().updateEcoOnShutdown();
     }
 
     public static EcoDatabaseSpigot getPlugin() {

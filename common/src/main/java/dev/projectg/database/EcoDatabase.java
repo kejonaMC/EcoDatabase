@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class EcoData {
+public class EcoDatabase {
 
     public static void addPlayer(String playerName, UUID playerUUID, double balance) {
 
