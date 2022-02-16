@@ -44,6 +44,7 @@ public class VaultApiHandler {
     }
 
     public void databaseSetBalance(Player player, double amount) {
+
         this.withdrawBalance(player, amount);
         amount = EcoDatabase.balance(player.getUniqueId(), "BALANCE");
         this.depositBalance(player, amount);

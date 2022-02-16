@@ -8,7 +8,6 @@ import java.util.UUID;
 public class EcoDatabase {
 
     public static void addPlayer(String playerName, UUID playerUUID, double balance) {
-
         try {
             String sql = "(PLAYERNAME,UUID,BALANCE) VALUES (?,?,?)";
             PreparedStatement insert = DatabaseSetup.getConnection().prepareStatement("INSERT INTO " + DatabaseSetup.economy
@@ -17,7 +16,6 @@ public class EcoDatabase {
             insert.setString(2, playerUUID.toString());
             insert.setDouble(3, balance);
             insert.executeUpdate();
-
         } catch (SQLException exe) {
             exe.printStackTrace();
         }
@@ -28,15 +26,11 @@ public class EcoDatabase {
             // Balance column
             PreparedStatement statement = DatabaseSetup.getConnection()
                     .prepareStatement("SELECT * FROM " + DatabaseSetup.economy + " WHERE UUID=?");
-
             statement.setString(1, uuid.toString());
             ResultSet results = statement.executeQuery();
             results.next();
             return results.getDouble(column);
-
-        } catch (SQLException ignored) {
-
-        }
+        } catch (SQLException ignored) {}
         return null;
 
     }
