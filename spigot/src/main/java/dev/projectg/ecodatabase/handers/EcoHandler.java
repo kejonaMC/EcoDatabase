@@ -11,7 +11,7 @@ import java.util.*;
 
 public class EcoHandler {
 
-    public static Map<UUID, Double> balance = new HashMap<>();
+    public static Map<UUID, Double> balanceHashmap = new HashMap<>();
     List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
 
     // Update when server is shutting down
@@ -35,7 +35,7 @@ public class EcoHandler {
             if (!onlinePlayers.isEmpty()) {
                 for (Player player : onlinePlayers) {
                     try {
-                        balance.put(player.getUniqueId(), VaultApiHandler.eco().getBalance(player));
+                        balanceHashmap.put(player.getUniqueId(), VaultApiHandler.eco().getBalance(player));
                     } catch (Exception e) {
                         EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.getName() + " balance");
                     }
@@ -47,8 +47,8 @@ public class EcoHandler {
     // Update balance at interval to database
     public void queryHashmapBalance(int interval) {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.plugin, () -> {
-            if (!balance.isEmpty()) {
-                for (Map.Entry<UUID, Double> entry : balance.entrySet()) {
+            if (!balanceHashmap.isEmpty()) {
+                for (Map.Entry<UUID, Double> entry : balanceHashmap.entrySet()) {
                     try {
                         EcoDatabase.updateBalance(entry.getKey(), entry.getValue());
                     } catch (Exception e) {
