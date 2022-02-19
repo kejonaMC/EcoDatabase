@@ -1,4 +1,4 @@
-yupackage dev.projectg.ecodatabase;
+package dev.projectg.ecodatabase;
 
 import com.google.inject.Inject;
 import dev.projectg.configuration.Configurate;
