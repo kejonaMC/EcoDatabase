@@ -1,28 +1,29 @@
-package dev.projectg.ecodatabase.handers;
+package dev.projectg.ecodatabase.handlers;
 
 import dev.projectg.database.EcoDatabase;
-import dev.projectg.ecodatabase.EcoDatabaseSpigot;
-import dev.projectg.ecodatabase.api.VaultApiHandler;
 import dev.projectg.logger.EcoDatabaseLogger;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class EcoHandler {
 
     public static Map<UUID, Double> balanceHashmap = new HashMap<>();
-    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+    List<Player> onlinePlayers = new ArrayList<>(Sponge.server().onlinePlayers());
+    Task.Builder taskBuilder = Task.builder();
 
     // Update when server is shutting down
     public void updateEcoOnShutdown() {
         if (!onlinePlayers.isEmpty()) {
             for (Player player : onlinePlayers) {
-                if (player.isOnline()) {
+                if (player.isLoaded()) {
                     try {
-                        EcoDatabase.updateBalance(player.getUniqueId(), VaultApiHandler.eco().getBalance(player));
+                        EcoDatabase.updateBalance(player.uniqueId(), Double.valueOf("ecoapihere"));
                     } catch (Exception e) {
-                        EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.getName() + " balance");
+                        EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.name() + " balance");
                     }
                 }
             }
@@ -31,22 +32,24 @@ public class EcoHandler {
 
     // Update hashmap balance each 5min
     public void updateHashmapBalance() {
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.plugin, () -> {
+        taskBuilder.interval(5, TimeUnit.MINUTES).execute(() -> {
+
             if (!onlinePlayers.isEmpty()) {
                 for (Player player : onlinePlayers) {
                     try {
-                        balanceHashmap.put(player.getUniqueId(), VaultApiHandler.eco().getBalance(player));
+                        balanceHashmap.put(player.uniqueId(), Double.valueOf("apihere"));
                     } catch (Exception e) {
-                        EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.getName() + " balance");
+                        EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.name() + " balance");
+
                     }
                 }
             }
-        }, 100L, 1000L * 60 * 5);
+        });
     }
 
     // Update balance at interval to database
     public void queryHashmapBalance(int interval) {
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.plugin, () -> {
+        taskBuilder.interval(interval, TimeUnit.MINUTES).execute(() -> {
             if (!balanceHashmap.isEmpty()) {
                 for (Map.Entry<UUID, Double> entry : balanceHashmap.entrySet()) {
                     try {
@@ -56,7 +59,7 @@ public class EcoHandler {
                     }
                 }
             }
-        }, 100L, 1000L * 60 * (long) interval);
+        });
     }
     public static EcoHandler handler() {
         return new EcoHandler();

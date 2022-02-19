@@ -6,7 +6,8 @@ database: Economy
 username: root
 password: password
 
-# Disabling sync will put less load on the server.
+# Uploading eco balance to database. Disabling sync will put less load on the server and database
+# But will not update the database on interval.
 enable-sync: true
 # sync interval in minutes (default: 5)
 sync-interval: 5

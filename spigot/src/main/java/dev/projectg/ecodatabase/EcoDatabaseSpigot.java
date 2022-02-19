@@ -3,7 +3,7 @@ package dev.projectg.ecodatabase;
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.api.VaultApiHandler;
-import dev.projectg.ecodatabase.handers.EcoHandler;
+import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
 import dev.projectg.logger.EcoDatabaseLogger;
 import dev.projectg.logger.JavaUtilLogger;

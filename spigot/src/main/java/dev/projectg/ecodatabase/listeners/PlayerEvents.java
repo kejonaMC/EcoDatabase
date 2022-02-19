@@ -2,7 +2,7 @@ package dev.projectg.ecodatabase.listeners;
 
 import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.api.VaultApiHandler;
-import dev.projectg.ecodatabase.handers.EcoHandler;
+import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.logger.EcoDatabaseLogger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +24,6 @@ public class PlayerEvents implements Listener {
             } else {
                 // Updating player balance from database to economy
                 VaultApiHandler.eco().databaseSetBalance(player, VaultApiHandler.eco().getBalance(player));
-                EcoHandler.balanceHashmap.remove(player.getUniqueId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,7 +34,11 @@ public class PlayerEvents implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         try {
             Player player = event.getPlayer();
+            // need updateBalance logic from hashmap
             EcoDatabase.updateBalance(player.getUniqueId(), VaultApiHandler.eco().getBalance(player));
+            EcoHandler.balanceHashmap.remove(player.getUniqueId());
+
+
         } catch (Exception e) {
             EcoDatabaseLogger.getLogger().error("Error while updating player balance");
         }
