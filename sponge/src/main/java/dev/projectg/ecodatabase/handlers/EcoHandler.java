@@ -1,6 +1,7 @@
 package dev.projectg.ecodatabase.handlers;
 
 import dev.projectg.database.EcoDatabase;
+import dev.projectg.ecodatabase.api.EconomyHandler;
 import dev.projectg.logger.EcoDatabaseLogger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -21,7 +22,7 @@ public class EcoHandler {
             for (Player player : onlinePlayers) {
                 if (player.isLoaded()) {
                     try {
-                        EcoDatabase.updateBalance(player.uniqueId(), Double.valueOf("ecoapihere"));
+                        EcoDatabase.updateBalance(player.uniqueId(), EconomyHandler.eco().getBalance(player.uniqueId()).doubleValue());
                     } catch (Exception e) {
                         EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.name() + " balance");
                     }
@@ -37,7 +38,7 @@ public class EcoHandler {
             if (!onlinePlayers.isEmpty()) {
                 for (Player player : onlinePlayers) {
                     try {
-                        balanceHashmap.put(player.uniqueId(), Double.valueOf("apihere"));
+                        balanceHashmap.put(player.uniqueId(), EconomyHandler.eco().getBalance(player.uniqueId()).doubleValue());
                     } catch (Exception e) {
                         EcoDatabaseLogger.getLogger().error("Error while updating player: " + player.name() + " balance");
 

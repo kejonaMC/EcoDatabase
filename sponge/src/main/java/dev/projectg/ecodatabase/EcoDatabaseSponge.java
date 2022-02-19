@@ -3,16 +3,20 @@ package dev.projectg.ecodatabase;
 import com.google.inject.Inject;
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
+import dev.projectg.ecodatabase.api.EconomyHandler;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
+import dev.projectg.ecodatabase.listeners.PlayerEvents;
 import dev.projectg.logger.EcoDatabaseLogger;
 import dev.projectg.logger.JavaUtilLogger;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.nio.file.Path;
@@ -21,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 @Plugin("EcoDatabase")
 public class EcoDatabaseSponge {
 
-    public static EcoDatabaseSponge plugin;
+   public PluginContainer container;
+
+   private static EcoDatabaseSponge plugin;
 
     Task.Builder taskBuilder = Task.builder();
 
@@ -32,10 +38,20 @@ public class EcoDatabaseSponge {
     @DefaultConfig(sharedRoot = true)
     private Path configPath;
 
+    @Inject
+    public EcoDatabaseSponge () {
+        plugin = this;
+    }
+
     @Listener
     public void onServerStarting(final StartingEngineEvent<Server> event) {
         new JavaUtilLogger((java.util.logging.Logger) logger);
         EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
+
+        new EconomyHandler();
+
+        // Listeners
+        Sponge.eventManager().registerListeners(container, new PlayerEvents());
 
         // Config setup
         Path path = configPath;
@@ -75,6 +91,10 @@ public class EcoDatabaseSponge {
 
     public Path getConfigPath() {
         return configPath;
+    }
+
+    public static EcoDatabaseSponge getInstance() {
+        return plugin;
     }
 
 }
