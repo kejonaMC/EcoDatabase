@@ -21,18 +21,15 @@ public class PlayerEvents implements Listener {
             if (checkDatabase == null) {
                 try {
                     // Adding player in database
-                    System.out.println("Adding player in database");
                         EcoHandler.balanceHashmap.put(player.getUniqueId(), VaultApi.eco().getBalance(player));
                         // Add player in database
                         EcoDatabase.addPlayer(player.getName(), player.getUniqueId(), VaultApi.eco().getBalance(player));
-                    System.out.println("Player added in database");
                 } catch (Exception e) {
                     EcoDatabaseLogger.getLogger().error("Error while adding player in database");
                 }
             } else {
                 try {
                     // Updating player balance from database to economy
-                    System.out.println("set player eco to db");
                     VaultApi.eco().databaseSetBalance(player);
                     EcoHandler.balanceHashmap.put(player.getUniqueId(), VaultApi.eco().getBalance(player));
                 } catch (Exception e) {
@@ -49,7 +46,6 @@ public class PlayerEvents implements Listener {
         try {
             Player player = event.getPlayer();
             // need updateBalance logic from hashmap
-            System.out.println("set player eco to db");
             EcoDatabase.updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
             EcoHandler.balanceHashmap.remove(player.getUniqueId());
         } catch (Exception e) {
