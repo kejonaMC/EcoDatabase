@@ -11,4 +11,3 @@ pluginManagement {
 
 include(":common")
 include(":spigot")
-include(":sponge")

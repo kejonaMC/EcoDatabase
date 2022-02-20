@@ -2,7 +2,7 @@ package dev.projectg.ecodatabase;
 
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
-import dev.projectg.ecodatabase.api.VaultApiHandler;
+import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
 import dev.projectg.logger.EcoDatabaseLogger;
@@ -24,7 +24,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
 
         // Enable vault
-        new VaultApiHandler();
+        new VaultApi();
 
         // Register events
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
@@ -47,7 +47,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         if (config.getDatabaseType().equals("mysql")) {
             Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
                 new DatabaseSetup().connectionAlive();
-            }, 100L, 1000L * 60 * 30);
+            }, 1000 * 60L, 1000L * 60 * 30);
         }
 
         // End
@@ -56,6 +56,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Plugin shutdown logic
         EcoHandler.handler().updateEcoOnShutdown();
         new DatabaseSetup().connectionClose();
     }

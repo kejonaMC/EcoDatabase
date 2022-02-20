@@ -7,13 +7,13 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-public class VaultApiHandler {
+public class VaultApi {
 
     EcoDatabaseSpigot plugin = EcoDatabaseSpigot.getPlugin();
     public Economy economy;
     public EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
 
-    public VaultApiHandler() {
+    public VaultApi() {
         if(!initVault()) {
             logger.error("Vault not found! Disabling EcoDatabase!");
             plugin.onDisable();
@@ -43,15 +43,18 @@ public class VaultApiHandler {
         this.economy.depositPlayer(player, amount);
     }
 
-    public void databaseSetBalance(Player player, double amount) {
+    public void databaseSetBalance(Player player) {
+        // Remove players balance
+        double balance = this.economy.getBalance(player);
+        this.withdrawBalance(player, balance);
 
-        this.withdrawBalance(player, amount);
-        amount = EcoDatabase.balance(player.getUniqueId(), "BALANCE");
-        this.depositBalance(player, amount);
+        // Add new balance from database into vault
+        double newAmount = EcoDatabase.balance(player.getUniqueId(), "BALANCE");
+        this.depositBalance(player, newAmount);
     }
 
-    public static VaultApiHandler eco() {
-        return new VaultApiHandler();
+    public static VaultApi eco() {
+        return new VaultApi();
     }
     public Economy getEconomy() {return economy;}
 

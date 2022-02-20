@@ -33,8 +33,8 @@ public class EcoDatabase {
             results.next();
             return results.getDouble(column);
         } catch (SQLException ignored) {}
-        return null;
 
+        return null;
     }
 
     // Update database player balance

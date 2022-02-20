@@ -26,7 +26,7 @@ public class DatabaseSetup {
         database = config.getDatabase();
         username = config.getUsername();
         password = config.getPassword();
-        economy = "Economy";
+        economy = "ecodatabase";
 
 
         if (config.getDatabaseType().equalsIgnoreCase("mysql")) {
@@ -89,10 +89,6 @@ public class DatabaseSetup {
         try {
             if (connection == null) {
                 logger.warn("Connection to database was lost, Trying to reconnect...");
-                connectionReconnect();
-            }
-            if (!connection.isReadOnly()) {
-                logger.warn("Unable to write to database, Trying to reconnect...");
                 connectionReconnect();
             }
             if (connection.isClosed()) {
