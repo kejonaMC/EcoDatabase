@@ -5,6 +5,7 @@ import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
+import dev.projectg.ecodatabase.utils.Metrics;
 import dev.projectg.logger.JavaUtilLogger;
 import dev.projectg.logger.Logger;
 import org.bukkit.Bukkit;
@@ -19,6 +20,9 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+
+        // Bstats metrics
+        new Metrics(this, 14430);
 
         // Logger
         Logger logger = new JavaUtilLogger(Bukkit.getLogger());
