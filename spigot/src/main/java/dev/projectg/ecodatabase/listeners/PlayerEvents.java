@@ -3,7 +3,7 @@ package dev.projectg.ecodatabase.listeners;
 import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
-import dev.projectg.logger.EcoDatabaseLogger;
+import dev.projectg.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +25,7 @@ public class PlayerEvents implements Listener {
                         // Add player in database
                         EcoDatabase.addPlayer(player.getName(), player.getUniqueId(), VaultApi.eco().getBalance(player));
                 } catch (Exception e) {
-                    EcoDatabaseLogger.getLogger().error("Error while adding player in database");
+                    Logger.getLogger().severe("Error while adding player in database");
                 }
             } else {
                 try {
@@ -33,7 +33,7 @@ public class PlayerEvents implements Listener {
                     VaultApi.eco().databaseSetBalance(player);
                     EcoHandler.balanceHashmap.put(player.getUniqueId(), VaultApi.eco().getBalance(player));
                 } catch (Exception e) {
-                    EcoDatabaseLogger.getLogger().error("Error while updating player balance from database to economy");
+                    Logger.getLogger().severe("Error while updating player balance from database to economy");
                 }
             }
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class PlayerEvents implements Listener {
             EcoDatabase.updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
             EcoHandler.balanceHashmap.remove(player.getUniqueId());
         } catch (Exception e) {
-            EcoDatabaseLogger.getLogger().error("Error while updating player balance from economy to database");
+            Logger.getLogger().severe("Error while updating player balance from economy to database");
         }
     }
 }

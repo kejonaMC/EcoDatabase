@@ -2,7 +2,7 @@ package dev.projectg.ecodatabase.api;
 
 import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.EcoDatabaseSpigot;
-import dev.projectg.logger.EcoDatabaseLogger;
+import dev.projectg.logger.Logger;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -11,11 +11,10 @@ public class VaultApi {
 
     EcoDatabaseSpigot plugin = EcoDatabaseSpigot.getPlugin();
     public Economy economy;
-    public EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
 
     public VaultApi() {
         if(!initVault()) {
-            logger.error("Vault not found! Disabling EcoDatabase!");
+            Logger.getLogger().severe("Vault not found! Disabling EcoDatabase!");
             plugin.onDisable();
         }
     }

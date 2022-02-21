@@ -5,23 +5,23 @@ import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
-import dev.projectg.logger.EcoDatabaseLogger;
 import dev.projectg.logger.JavaUtilLogger;
+import dev.projectg.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
 
 public final class EcoDatabaseSpigot extends JavaPlugin {
-    public static EcoDatabaseSpigot plugin;
+
+    private static EcoDatabaseSpigot plugin;
 
     @Override
     public void onEnable() {
         plugin = this;
 
         // Logger
-        new JavaUtilLogger(getLogger());
-        EcoDatabaseLogger logger = EcoDatabaseLogger.getLogger();
+        Logger logger = new JavaUtilLogger(Bukkit.getLogger());
 
         // Enable vault
         new VaultApi();
@@ -37,7 +37,9 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         EcoHandler.handler().updateHashmapBalance();
         if (config.getEnableSync()) {
             logger.info("Sync economy enabled");
-            EcoHandler.handler().queryHashmapBalance(config.getSyncInterval());
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+                EcoHandler.handler().queryHashmapBalance();
+            }   , 20L + 30, 20L * 60 * config.getSyncInterval());
         }
 
         // Database setup

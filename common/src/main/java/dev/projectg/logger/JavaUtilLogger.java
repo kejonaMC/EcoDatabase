@@ -1,59 +1,43 @@
 package dev.projectg.logger;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+public class JavaUtilLogger extends Logger {
 
-public final class JavaUtilLogger implements EcoDatabaseLogger {
-    private final Logger logger;
-    private Level originLevel;
+    private final java.util.logging.Logger handle;
+    private boolean debug = false;
 
-    public JavaUtilLogger(Logger logger) {
-        this.logger = logger;
-        EcoDatabaseLogger.setLogger(this);
-    }
-
-    @Override
-    public void error(String message) {
-        logger.severe(message);
-    }
-
-    @Override
-    public void warn(String message) {
-        logger.warning(message);
+    public JavaUtilLogger(java.util.logging.Logger logger) {
+        handle = logger;
     }
 
     @Override
     public void info(String message) {
-        logger.info(message);
+        handle.info(message);
+    }
+
+    @Override
+    public void warn(String message) {
+        handle.warning(message);
+    }
+
+    @Override
+    public void severe(String message) {
+        handle.severe(message);
     }
 
     @Override
     public void debug(String message) {
-        logger.fine(message);
-    }
-
-    @Override
-    public void trace(String message) {
-        logger.finer(message);
-    }
-
-    @Override
-    public void enableDebug() {
-        originLevel = logger.getLevel();
-        logger.setLevel(Level.ALL);
-        info("Debug logging enabled");
-    }
-
-    @Override
-    public void disableDebug() {
-        if (originLevel != null) {
-            logger.setLevel(originLevel);
-            info("Debug logging disabled");
+        if (debug) {
+            handle.info(message);
         }
     }
 
     @Override
     public boolean isDebug() {
-        return logger.getLevel() == Level.ALL;
+        return debug;
+    }
+
+    @Override
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

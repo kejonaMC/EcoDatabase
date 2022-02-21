@@ -1,3 +1,4 @@
+
 database-type: mysql
 
 host: localhost
@@ -6,8 +7,8 @@ database: economy
 username: root
 password: password
 
-# Uploading eco balance to database. Disabling sync will put less load on the server and database
-# But will not update the database on interval.
+# This option allows the data to be uploaded to the database on intervals.
+# Disabling this option can cause data loss when server crashes.
 enable-sync: true
-# sync interval in minutes (default: 5)
-sync-interval: 5
+# sync interval in minutes (default: 30)
+sync-interval: 30
