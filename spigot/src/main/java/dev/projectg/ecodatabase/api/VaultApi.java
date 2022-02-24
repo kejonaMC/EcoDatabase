@@ -1,6 +1,5 @@
 package dev.projectg.ecodatabase.api;
 
-import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.EcoDatabaseSpigot;
 import dev.projectg.logger.Logger;
 import net.milkbowl.vault.economy.Economy;
@@ -48,7 +47,7 @@ public class VaultApi {
         this.withdrawBalance(player, balance);
 
         // Add new balance from database into vault
-        double newAmount = EcoDatabase.balance(player.getUniqueId(), "BALANCE");
+        double newAmount = EcoDatabaseSpigot.getPlugin().getEcoDatabase().balance(player.getUniqueId(), "BALANCE");
         this.depositBalance(player, newAmount);
     }
 

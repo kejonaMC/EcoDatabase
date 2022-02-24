@@ -8,7 +8,7 @@ import java.util.UUID;
 public class EcoDatabase {
 
     // Add player into database on first join
-    public static void addPlayer(String playerName, UUID playerUUID, double balance) {
+    public void addPlayer(String playerName, UUID playerUUID, double balance) {
         try {
             String sql = "(PLAYERNAME,UUID,BALANCE) VALUES (?,?,?)";
             PreparedStatement insert = DatabaseSetup.getConnection().prepareStatement("INSERT INTO " + DatabaseSetup.economy
@@ -23,7 +23,7 @@ public class EcoDatabase {
     }
 
     // Query database for player balance
-    public static Double balance(UUID uuid, String column) {
+    public Double balance(UUID uuid, String column) {
         try {
             // Balance column
             PreparedStatement statement = DatabaseSetup.getConnection()
@@ -38,7 +38,7 @@ public class EcoDatabase {
     }
 
     // Update database player balance
-    public static void updateBalance(UUID playerUUID, Double balance) {
+    public void updateBalance(UUID playerUUID, Double balance) {
         try {
             String sql = " SET BALANCE ='" + balance + "' WHERE UUID='" + playerUUID + "'";
             PreparedStatement insert = DatabaseSetup.getConnection().prepareStatement("UPDATE " + DatabaseSetup.economy

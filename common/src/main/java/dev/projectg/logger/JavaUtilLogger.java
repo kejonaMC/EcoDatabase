@@ -10,14 +10,10 @@ public class JavaUtilLogger extends Logger {
     }
 
     @Override
-    public void info(String message) {
-        handle.info(message);
-    }
+    public void info(String message) {handle.info(message);}
 
     @Override
-    public void warn(String message) {
-        handle.warning(message);
-    }
+    public void warn(String message) {handle.warning(message);}
 
     @Override
     public void severe(String message) {

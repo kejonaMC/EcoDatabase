@@ -1,6 +1,5 @@
 package dev.projectg.ecodatabase.handlers;
 
-import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.EcoDatabaseSpigot;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.logger.Logger;
@@ -13,6 +12,7 @@ public class EcoHandler {
 
     public static Map<UUID, Double> balanceHashmap = new HashMap<>();
     List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+    EcoDatabaseSpigot instance = EcoDatabaseSpigot.getPlugin();
 
     // Update when server is shutting down
     public void updateEcoOnShutdown() {
@@ -21,7 +21,7 @@ public class EcoHandler {
                 for (Player player : onlinePlayers) {
                     if (player.isOnline()) {
                         try {
-                            EcoDatabase.updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
+                            instance.getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
                         } catch (Exception e) {
                             Logger.getLogger().severe("Error while updating player: " + player.getName() + " balance");
                         }
@@ -36,7 +36,7 @@ public class EcoHandler {
     // Update hashmap balance each 5min
     public void updateHashmapBalance() {
         try {
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.getPlugin(), () -> {
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, () -> {
                 if (!onlinePlayers.isEmpty()) {
                     for (Player player : onlinePlayers) {
                         try {
@@ -46,7 +46,7 @@ public class EcoHandler {
                         }
                     }
                 }
-            }, 100L, 1000L * 60 * 5);
+            }, 20L * 60L * 5L, 20L * 60 * 5);
         } catch (Exception e) {
             Logger.getLogger().severe("Error while updating hashmap balance");
         }
@@ -59,7 +59,7 @@ public class EcoHandler {
                 Logger.getLogger().warn("Updating player's balance in database do not shutdown the server!");
                 for (Map.Entry<UUID, Double> entry : balanceHashmap.entrySet()) {
                     try {
-                        EcoDatabase.updateBalance(entry.getKey(), entry.getValue());
+                        instance.getEcoDatabase().updateBalance(entry.getKey(), entry.getValue());
                     } catch (Exception e) {
                         Logger.getLogger().severe("Error query eco balance to database");
                     }
@@ -70,7 +70,5 @@ public class EcoHandler {
         }
     }
 
-    public static EcoHandler handler() {
-        return new EcoHandler();
-    }
+    public static EcoHandler handler() { return new EcoHandler();}
 }

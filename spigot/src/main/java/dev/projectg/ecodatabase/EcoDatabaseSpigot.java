@@ -2,6 +2,7 @@ package dev.projectg.ecodatabase;
 
 import dev.projectg.configuration.Configurate;
 import dev.projectg.database.DatabaseSetup;
+import dev.projectg.database.EcoDatabase;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
 import dev.projectg.ecodatabase.listeners.PlayerEvents;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 public final class EcoDatabaseSpigot extends JavaPlugin {
 
     private static EcoDatabaseSpigot plugin;
+    private static EcoDatabase ecodata;
 
     @Override
     public void onEnable() {
@@ -41,19 +43,16 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         EcoHandler.handler().updateHashmapBalance();
         if (config.getEnableSync()) {
             logger.info("Sync economy enabled");
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-                EcoHandler.handler().queryHashmapBalance();
-            }   , 20L + 30, 20L * 60 * config.getSyncInterval());
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> EcoHandler.handler().queryHashmapBalance(), 20L + 30, 20L * 60 * config.getSyncInterval());
         }
 
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
         new DatabaseSetup().mysqlSetup(path, config);
+        ecodata = new EcoDatabase();
         // Check if connection is mysql and alive -> reconnect
         if (config.getDatabaseType().equals("mysql")) {
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-                new DatabaseSetup().connectionAlive();
-            }, 1000 * 60L, 1000L * 60 * 30);
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> new DatabaseSetup().connectionAlive(), 20L * 60L * 1L, 20L * 60L * 1L);
         }
 
         // End
@@ -70,4 +69,5 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     public static EcoDatabaseSpigot getPlugin() {
         return plugin;
     }
+    public EcoDatabase getEcoDatabase() { return ecodata;}
 }

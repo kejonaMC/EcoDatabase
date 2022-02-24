@@ -7,10 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
+import java.util.Properties;
 
 public class DatabaseSetup {
 
-    private static Connection connection;
+    private static Connection connection = null;
     public String host;
     public String database;
     public String username;
@@ -29,20 +30,18 @@ public class DatabaseSetup {
         if (config.getDatabaseType().equalsIgnoreCase("mysql")) {
             Logger.getLogger().info("Connecting to MySQL database...");
             try {
-                synchronized (this) {
-                    if (getConnection() != null && !getConnection().isClosed()) {
-                        Logger.getLogger().severe("Connection is already open!");
-                    }
-
-                    Class.forName("com.mysql.jdbc.Driver");
-                    setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":"
-                            + this.port + "/" + this.database, this.username, this.password));
-                    createTable();
-
+                Class.forName("com.mysql.jdbc.Driver");
+                Properties properties = new Properties();
+                properties.setProperty("user", username);
+                properties.setProperty("password", password);
+                properties.setProperty("autoReconnect", "true");
+                properties.setProperty("verifyServerCertificate", "false");
+                connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, properties);
+                // Create tables
+                createTable();
                     Logger.getLogger().info("MYSQL Connected");
-                }
             } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
+                Logger.getLogger().severe("Could not connect to MySQL database!" + e.getMessage());
             }
         } else if (config.getDatabaseType().equalsIgnoreCase("sqlite")) {
             Logger.getLogger().info("Connecting to SQLite database...");
@@ -63,13 +62,13 @@ public class DatabaseSetup {
                     Logger.getLogger().info("SQLite Connected");
                 } catch (Exception e) {
                     System.out.println("SQLite Error");
-                    e.printStackTrace();
+                    Logger.getLogger().severe("Could not connect to SQLite database!" + e.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            Logger.getLogger().severe("[EcoDatabase] Database type not found we currently support only mysql and sqlite");
+            Logger.getLogger().severe("Database type not found! We currently support only mysql and sqlite");
         }
     }
     public static void createTable() {
@@ -78,40 +77,48 @@ public class DatabaseSetup {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + DatabaseSetup.economy + "(Playername varchar(16), UUID char(36), Balance varchar(500))");
             statement.closeOnCompletion();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.getLogger().severe("Could not create tables!" + e.getMessage());
         }
     }
 
     public void connectionAlive() {
         try {
-            if (connection == null) {
-                Logger.getLogger().warn("Connection to database was lost, Trying to reconnect...");
-                connectionReconnect();
-            }
+            Logger.getLogger().info("Checking Database connection...");
             if (connection.isClosed()) {
                 Logger.getLogger().warn("Connection to database is closed, Trying to reconnect...");
+                connection.close();
+                connectionReconnect();
+            }
+            DatabaseMetaData dbm = connection.getMetaData();
+            ResultSet tables = dbm.getTables(null, null, "ecodatabase", null);
+            if (!tables.next()) {
+                Logger.getLogger().severe("Connection to the database was lost! Trying to reconnect...");
+                connection.close();
                 connectionReconnect();
             }
         } catch (Exception e) {
-            Logger.getLogger().severe("Could not reconnect to Database! Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void connectionReconnect() {
+        long start;
+        long end;
+        start = System.currentTimeMillis();
+        Logger.getLogger().warn("Attempting to establish a connection to the MySQL server!");
         try {
-            long start;
-            long end;
-
-            start = System.currentTimeMillis();
-            Logger.getLogger().warn("Attempting to establish a connection to the MySQL server!");
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":"
-                    + this.port + "/" + this.database, this.username, this.password);
-            end = System.currentTimeMillis();
-            Logger.getLogger().info("Connection to MySQL server established in " + ((end - start)) + " ms!");
-        } catch (Exception e) {
-            Logger.getLogger().severe("Error re-connecting to the database! Error: " + e.getMessage());
+            Properties properties = new Properties();
+            properties.setProperty("user", username);
+            properties.setProperty("password", password);
+            properties.setProperty("autoReconnect", "true");
+            properties.setProperty("verifyServerCertificate", "false");
+            connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, properties);
+        } catch (SQLException | ClassNotFoundException e) {
+            Logger.getLogger().severe("Could not connect to MySQL database!" + e.getMessage());
         }
+        end = System.currentTimeMillis();
+        Logger.getLogger().info("Connection to MySQL server established in " + ((end - start)) + " ms!");
     }
 
     public void connectionClose() {
@@ -123,7 +130,6 @@ public class DatabaseSetup {
             e.printStackTrace();
         }
     }
-
 
     public void setConnection(Connection connection) {
         DatabaseSetup.connection = connection;
