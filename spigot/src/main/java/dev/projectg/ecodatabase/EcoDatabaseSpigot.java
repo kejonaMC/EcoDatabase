@@ -52,7 +52,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         ecodata = new EcoDatabase();
         // Check if connection is mysql and alive -> reconnect
         if (config.getDatabaseType().equals("mysql")) {
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> new DatabaseSetup().connectionAlive(), 20L * 60L * 1L, 20L * 60L * 1L);
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> new DatabaseSetup().connectionAlive(), 20L * 60L * 1L, 20L * 60L * 15L);
         }
 
         // End
