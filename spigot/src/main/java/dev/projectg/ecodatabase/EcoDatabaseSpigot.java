@@ -39,7 +39,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         Path path = this.getDataFolder().toPath();
         Configurate config = Configurate.create(path);
 
-        // Sync Economy
+        // Sync Economy to database
         EcoHandler.handler().updateHashmapBalance();
         if (config.getEnableSync()) {
             logger.info("Sync economy enabled");
@@ -50,10 +50,6 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         logger.info("Selected " + config.getDatabaseType() + " database!");
         new DatabaseSetup().mysqlSetup(path, config);
         ecodata = new EcoDatabase();
-        // Check if connection is mysql and alive -> reconnect
-        if (config.getDatabaseType().equals("mysql")) {
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> new DatabaseSetup().connectionAlive(), 20L * 60L * 1L, 20L * 60L * 15L);
-        }
 
         // End
         logger.info("EcoDatabase has been enabled!");

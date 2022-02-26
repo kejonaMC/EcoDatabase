@@ -17,8 +17,7 @@ public class EcoDatabase {
             insert.setString(2, playerUUID.toString());
             insert.setDouble(3, balance);
             insert.executeUpdate();
-        } catch (SQLException exe) {
-            exe.printStackTrace();
+        } catch (SQLException ignored) {
         }
     }
 
@@ -44,8 +43,6 @@ public class EcoDatabase {
             PreparedStatement insert = DatabaseSetup.getConnection().prepareStatement("UPDATE " + DatabaseSetup.economy
                     + sql);
             insert.executeUpdate();
-        } catch (SQLException exe) {
-            exe.printStackTrace();
-        }
+        } catch (SQLException ignored) {}
     }
 }

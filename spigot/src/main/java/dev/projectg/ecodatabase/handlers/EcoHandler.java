@@ -1,5 +1,6 @@
 package dev.projectg.ecodatabase.handlers;
 
+import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.EcoDatabaseSpigot;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.logger.Logger;
@@ -55,6 +56,9 @@ public class EcoHandler {
     // Update balance at interval to database
     public void queryHashmapBalance() {
         try {
+            if (!(DatabaseSetup.connectionAlive())) {
+                DatabaseSetup.connectionReconnect();
+            }
             if (!balanceHashmap.isEmpty()) {
                 Logger.getLogger().warn("Updating player's balance in database do not shutdown the server!");
                 for (Map.Entry<UUID, Double> entry : balanceHashmap.entrySet()) {
@@ -69,6 +73,5 @@ public class EcoHandler {
             Logger.getLogger().severe("Error while querying hashmap balance");
         }
     }
-
     public static EcoHandler handler() { return new EcoHandler();}
 }

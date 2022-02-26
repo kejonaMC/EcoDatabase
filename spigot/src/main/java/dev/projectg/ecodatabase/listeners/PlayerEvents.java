@@ -1,5 +1,6 @@
 package dev.projectg.ecodatabase.listeners;
 
+import dev.projectg.database.DatabaseSetup;
 import dev.projectg.ecodatabase.EcoDatabaseSpigot;
 import dev.projectg.ecodatabase.api.VaultApi;
 import dev.projectg.ecodatabase.handlers.EcoHandler;
@@ -18,6 +19,9 @@ public class PlayerEvents implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         try {
             Player player = event.getPlayer();
+            if (!(DatabaseSetup.connectionAlive())) {
+                DatabaseSetup.connectionReconnect();
+            }
             // Check if player has a record in database
             Double checkDatabase = instance.getEcoDatabase().balance(player.getUniqueId(), "BALANCE");
             if (checkDatabase == null) {
@@ -47,6 +51,10 @@ public class PlayerEvents implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         try {
             Player player = event.getPlayer();
+
+            if (!(DatabaseSetup.connectionAlive())) {
+                DatabaseSetup.connectionReconnect();
+            }
             // need updateBalance logic from hashmap
             instance.getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
             EcoHandler.balanceHashmap.remove(player.getUniqueId());

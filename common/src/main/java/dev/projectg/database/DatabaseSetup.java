@@ -12,11 +12,11 @@ import java.util.Properties;
 public class DatabaseSetup {
 
     private static Connection connection = null;
-    public String host;
-    public String database;
-    public String username;
-    public String password;
-    public int port;
+    private static String host;
+    private static String database;
+    private static String username;
+    private static String password;
+    private static int port;
     public static String economy;
 
     public void mysqlSetup(Path dataDirectory, Configurate config) {
@@ -37,11 +37,12 @@ public class DatabaseSetup {
                 properties.setProperty("autoReconnect", "true");
                 properties.setProperty("verifyServerCertificate", "false");
                 connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, properties);
-                // Create tables
-                createTable();
-                    Logger.getLogger().info("MYSQL Connected");
+                Statement statement = connection.createStatement();
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + DatabaseSetup.economy + "(Playername varchar(16), UUID char(36), Balance varchar(500))");
+                statement.closeOnCompletion();
+                Logger.getLogger().info("MYSQL Connected");
             } catch (SQLException | ClassNotFoundException e) {
-                Logger.getLogger().severe("Could not connect to MySQL database!" + e.getMessage());
+                Logger.getLogger().severe("Could not connect to MySQL database! " + e.getMessage());
             }
         } else if (config.getDatabaseType().equalsIgnoreCase("sqlite")) {
             Logger.getLogger().info("Connecting to SQLite database...");
@@ -62,46 +63,40 @@ public class DatabaseSetup {
                     Logger.getLogger().info("SQLite Connected");
                 } catch (Exception e) {
                     System.out.println("SQLite Error");
-                    Logger.getLogger().severe("Could not connect to SQLite database!" + e.getMessage());
+                    Logger.getLogger().severe("Could not connect to SQLite database! " + e.getMessage());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.getLogger().severe("Could not create SQLite database! " + e.getMessage());
             }
         } else {
             Logger.getLogger().severe("Database type not found! We currently support only mysql and sqlite");
         }
     }
-    public static void createTable() {
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + DatabaseSetup.economy + "(Playername varchar(16), UUID char(36), Balance varchar(500))");
-            statement.closeOnCompletion();
-        } catch (SQLException e) {
-            Logger.getLogger().severe("Could not create tables!" + e.getMessage());
-        }
-    }
 
-    public void connectionAlive() {
+    public static boolean connectionAlive() {
         try {
-            Logger.getLogger().info("Checking Database connection...");
+            if (connection == null) {
+                Logger.getLogger().severe("Connection is null! No data will be saved in the mean time. Please check your database configuration!");
+                return false;
+            }
             if (connection.isClosed()) {
                 Logger.getLogger().warn("Connection to database is closed, Trying to reconnect...");
-                connection.close();
-                connectionReconnect();
+                return false;
             }
             DatabaseMetaData dbm = connection.getMetaData();
             ResultSet tables = dbm.getTables(null, null, "ecodatabase", null);
             if (!tables.next()) {
                 Logger.getLogger().severe("Connection to the database was lost! Trying to reconnect...");
-                connection.close();
-                connectionReconnect();
+                return false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            else {
+                return true;
+            }
+        } catch (SQLException ignored) {
         }
+        return true;
     }
-
-    public void connectionReconnect() {
+    public static void connectionReconnect() {
         long start;
         long end;
         start = System.currentTimeMillis();
@@ -115,7 +110,8 @@ public class DatabaseSetup {
             properties.setProperty("verifyServerCertificate", "false");
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, properties);
         } catch (SQLException | ClassNotFoundException e) {
-            Logger.getLogger().severe("Could not connect to MySQL database!" + e.getMessage());
+            Logger.getLogger().severe("Could not connect to MySQL database! " + e.getMessage());
+            return;
         }
         end = System.currentTimeMillis();
         Logger.getLogger().info("Connection to MySQL server established in " + ((end - start)) + " ms!");
@@ -134,7 +130,6 @@ public class DatabaseSetup {
     public void setConnection(Connection connection) {
         DatabaseSetup.connection = connection;
     }
-
     public static Connection getConnection() {
         return connection;
     }
