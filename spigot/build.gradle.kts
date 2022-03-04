@@ -8,13 +8,10 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
-
     maven("https://libraries.minecraft.net/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
-
 }
 
 dependencies {
@@ -35,3 +32,9 @@ tasks.withType<ShadowJar> {
     archiveFileName.set("EcoDatabase.jar")
     println(archiveFileName.get())
 }
+
+tasks.named("build") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
+description = "spigot"

@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
+    compileOnly("org.jetbrains:annotations:22.0.0")
 }
 
 description = "common"

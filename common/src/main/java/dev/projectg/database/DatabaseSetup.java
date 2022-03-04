@@ -89,13 +89,12 @@ public class DatabaseSetup {
                 Logger.getLogger().severe("Connection to the database was lost! Trying to reconnect...");
                 return false;
             }
-            else {
-                return true;
-            }
-        } catch (SQLException ignored) {
-        }
+            else { return true; }
+        } catch (SQLException ignored) {}
+
         return true;
     }
+
     public static void connectionReconnect() {
         long start;
         long end;
@@ -111,6 +110,7 @@ public class DatabaseSetup {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, properties);
         } catch (SQLException | ClassNotFoundException e) {
             Logger.getLogger().severe("Could not connect to MySQL database! " + e.getMessage());
+
             return;
         }
         end = System.currentTimeMillis();

@@ -8,22 +8,22 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class VaultApi {
 
-    EcoDatabaseSpigot plugin = EcoDatabaseSpigot.getPlugin();
     public Economy economy;
 
     public VaultApi() {
-        if(!initVault()) {
+
+        if (!initVault()) {
             Logger.getLogger().severe("Vault not found! Disabling EcoDatabase!");
-            plugin.onDisable();
+            EcoDatabaseSpigot.getPlugin().onDisable();
         }
     }
 
     private boolean initVault() {
 
-        if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
+        if (EcoDatabaseSpigot.getPlugin().getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        final RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
+        final RegisteredServiceProvider<Economy> rsp = EcoDatabaseSpigot.getPlugin().getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) return false;
 
         economy = rsp.getProvider();
@@ -31,7 +31,9 @@ public class VaultApi {
         return economy != null;
     }
 
-    public double getBalance(Player player) {return this.economy.getBalance(player);}
+    public double getBalance(Player player) {
+        return this.economy.getBalance(player);
+    }
 
     public void withdrawBalance(Player player, double amount) {
         this.economy.withdrawPlayer(player, amount);
@@ -54,6 +56,8 @@ public class VaultApi {
     public static VaultApi eco() {
         return new VaultApi();
     }
-    public Economy getEconomy() {return economy;}
 
+    public Economy getEconomy() {
+        return economy;
+    }
 }

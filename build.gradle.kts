@@ -23,6 +23,7 @@ subprojects {
     apply(plugin = "maven-publish")
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 
@@ -30,10 +31,14 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.22")
         compileOnly("org.projectlombok:lombok:1.18.22")
     }
-}
 
-tasks.named("build") {
-    dependsOn(tasks.named("shadowJar"))
+    tasks.named<Test>("test") {
+        useJUnitPlatform()
+    }
+
+    tasks.named("build") {
+        dependsOn(tasks.named<Test>("test"))
+    }
 }
 
 // todo: process resources / token replacement

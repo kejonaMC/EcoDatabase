@@ -3,6 +3,7 @@ package dev.projectg.configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import dev.projectg.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,8 @@ public class Configurate {
      *
      * @param dataDirectory The config's directory
      */
-    public static Configurate create(Path dataDirectory) {
+    public static Configurate configuration(Path dataDirectory) throws IOException {
+
         File folder = dataDirectory.toFile();
         File file = new File(folder, "config.yml");
 
@@ -35,17 +37,12 @@ public class Configurate {
                     file.createNewFile();
                 }
             } catch (IOException exception) {
-                exception.printStackTrace();
+                Logger.getLogger().severe("Could not generate config file! " + exception.getMessage());
             }
         }
 
-        // Read config
-        try {
-            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            return mapper.readValue(dataDirectory.resolve("config.yml").toFile(), Configurate.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot create EcoBase config!", e);
-        }
+        final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        return mapper.readValue(dataDirectory.resolve("config.yml").toFile(), Configurate.class);
     }
 
     @JsonProperty("database-type")
@@ -58,7 +55,9 @@ public class Configurate {
     @JsonProperty("host")
     private String host;
 
-    public String getHost() {return host;}
+    public String getHost() {
+        return host;
+    }
 
     @JsonProperty("port")
     private int port;

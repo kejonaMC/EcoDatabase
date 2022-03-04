@@ -12,22 +12,25 @@ import dev.projectg.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public final class EcoDatabaseSpigot extends JavaPlugin {
 
-    private static EcoDatabaseSpigot plugin;
-    private static EcoDatabase ecodata;
+    public static EcoDatabaseSpigot plugin;
+    private static EcoDatabase ecoData;
 
     @Override
     public void onEnable() {
         plugin = this;
+        Path path = this.getDataFolder().toPath();
 
         // Bstats metrics
         new Metrics(this, 14430);
 
         // Logger
-        Logger logger = new JavaUtilLogger(Bukkit.getLogger());
+        Logger logger = new JavaUtilLogger(this.getLogger());
 
         // Enable vault
         new VaultApi();
@@ -36,12 +39,16 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
 
         // Config setup
-        Path path = this.getDataFolder().toPath();
-        Configurate config = Configurate.create(path);
+        Configurate config = null;
+        try {
+            config = Configurate.configuration(path);
+        } catch (IOException e) {
+            logger.severe("Could not load config.yml! " + e.getMessage());
+        }
 
         // Sync Economy to database
         EcoHandler.handler().updateHashmapBalance();
-        if (config.getEnableSync()) {
+        if (Objects.requireNonNull(config).getEnableSync()) {
             logger.info("Sync economy enabled");
             Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> EcoHandler.handler().queryHashmapBalance(), 20L + 30, 20L * 60 * config.getSyncInterval());
         }
@@ -49,7 +56,7 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         // Database setup
         logger.info("Selected " + config.getDatabaseType() + " database!");
         new DatabaseSetup().mysqlSetup(path, config);
-        ecodata = new EcoDatabase();
+        ecoData = new EcoDatabase();
 
         // End
         logger.info("EcoDatabase has been enabled!");
@@ -65,5 +72,8 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     public static EcoDatabaseSpigot getPlugin() {
         return plugin;
     }
-    public EcoDatabase getEcoDatabase() { return ecodata;}
+
+    public EcoDatabase getEcoDatabase() {
+        return ecoData;
+    }
 }

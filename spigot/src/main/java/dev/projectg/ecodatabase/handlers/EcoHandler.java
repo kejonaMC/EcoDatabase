@@ -12,8 +12,7 @@ import java.util.*;
 public class EcoHandler {
 
     public static Map<UUID, Double> balanceHashmap = new HashMap<>();
-    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-    EcoDatabaseSpigot instance = EcoDatabaseSpigot.getPlugin();
+    public List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
 
     // Update when server is shutting down
     public void updateEcoOnShutdown() {
@@ -22,7 +21,7 @@ public class EcoHandler {
                 for (Player player : onlinePlayers) {
                     if (player.isOnline()) {
                         try {
-                            instance.getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
+                            EcoDatabaseSpigot.getPlugin().getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
                         } catch (Exception e) {
                             Logger.getLogger().severe("Error while updating player: " + player.getName() + " balance");
                         }
@@ -37,7 +36,7 @@ public class EcoHandler {
     // Update hashmap balance each 5min
     public void updateHashmapBalance() {
         try {
-            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, () -> {
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(EcoDatabaseSpigot.getPlugin(), () -> {
                 if (!onlinePlayers.isEmpty()) {
                     for (Player player : onlinePlayers) {
                         try {
@@ -63,7 +62,7 @@ public class EcoHandler {
                 Logger.getLogger().warn("Updating player's balance in database do not shutdown the server!");
                 for (Map.Entry<UUID, Double> entry : balanceHashmap.entrySet()) {
                     try {
-                        instance.getEcoDatabase().updateBalance(entry.getKey(), entry.getValue());
+                        EcoDatabaseSpigot.getPlugin().getEcoDatabase().updateBalance(entry.getKey(), entry.getValue());
                     } catch (Exception e) {
                         Logger.getLogger().severe("Error query eco balance to database");
                     }

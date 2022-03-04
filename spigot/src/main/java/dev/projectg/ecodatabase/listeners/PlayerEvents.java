@@ -13,8 +13,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerEvents implements Listener {
 
-    EcoDatabaseSpigot instance = EcoDatabaseSpigot.getPlugin();
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         try {
@@ -23,13 +21,13 @@ public class PlayerEvents implements Listener {
                 DatabaseSetup.connectionReconnect();
             }
             // Check if player has a record in database
-            Double checkDatabase = instance.getEcoDatabase().balance(player.getUniqueId(), "BALANCE");
+            Double checkDatabase = EcoDatabaseSpigot.getPlugin().getEcoDatabase().balance(player.getUniqueId(), "BALANCE");
             if (checkDatabase == null) {
                 try {
                     // Adding player in database
-                        EcoHandler.balanceHashmap.put(player.getUniqueId(), VaultApi.eco().getBalance(player));
+                     EcoHandler.balanceHashmap.put(player.getUniqueId(), VaultApi.eco().getBalance(player));
                         // Add player in database
-                        instance.getEcoDatabase().addPlayer(player.getName(), player.getUniqueId(), VaultApi.eco().getBalance(player));
+                     EcoDatabaseSpigot.getPlugin().getEcoDatabase().addPlayer(player.getName(), player.getUniqueId(), VaultApi.eco().getBalance(player));
                 } catch (Exception e) {
                     Logger.getLogger().severe("Error while adding player in database");
                 }
@@ -56,7 +54,7 @@ public class PlayerEvents implements Listener {
                 DatabaseSetup.connectionReconnect();
             }
             // need updateBalance logic from hashmap
-            instance.getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
+            EcoDatabaseSpigot.getPlugin().getEcoDatabase().updateBalance(player.getUniqueId(), VaultApi.eco().getBalance(player));
             EcoHandler.balanceHashmap.remove(player.getUniqueId());
         } catch (Exception e) {
             Logger.getLogger().severe("Error while updating player balance from economy to database");
