@@ -24,19 +24,11 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        Path path = this.getDataFolder().toPath();
-
-        // Bstats metrics
-        new Metrics(this, 14430);
 
         // Logger
         Logger logger = new JavaUtilLogger(this.getLogger());
 
-        // Enable vault
-        new VaultApi();
-
-        // Register events
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
+        Path path = this.getDataFolder().toPath();
 
         // Config setup
         Configurate config = null;
@@ -45,6 +37,15 @@ public final class EcoDatabaseSpigot extends JavaPlugin {
         } catch (IOException e) {
             logger.severe("Could not load config.yml! " + e.getMessage());
         }
+
+        // Bstats metrics
+        new Metrics(this, 14430);
+
+        // Enable vault
+        new VaultApi();
+
+        // Register events
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
 
         // Sync Economy to database
         EcoHandler.handler().updateHashmapBalance();

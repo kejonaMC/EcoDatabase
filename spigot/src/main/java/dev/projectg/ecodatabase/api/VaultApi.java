@@ -11,15 +11,12 @@ public class VaultApi {
     public Economy economy;
 
     public VaultApi() {
-
         if (!initVault()) {
             Logger.getLogger().severe("Vault not found! Disabling EcoDatabase!");
-            EcoDatabaseSpigot.getPlugin().onDisable();
         }
     }
 
     private boolean initVault() {
-
         if (EcoDatabaseSpigot.getPlugin().getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }

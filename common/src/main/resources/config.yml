@@ -1,5 +1,5 @@
-
-database-type: mysql
+# Supported database-types mysql - sqlite
+database-type: sqlite
 
 host: localhost
 port: 3306
@@ -10,5 +10,5 @@ password: password
 # This option allows the data to be uploaded to the database on intervals.
 # Disabling this option can cause data loss when server crashes.
 enable-sync: true
-# sync interval in minutes (default: 30)
+# Sync interval in minutes (default: 30)
 sync-interval: 30
